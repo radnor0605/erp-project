@@ -1,0 +1,41 @@
+# ─── 개인 설정 / 시크릿 ──────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# ─── 데이터베이스 ────────────────────────────────────────────
+database/*.db
+database/*.db-shm
+database/*.db-wal
+database/backups/
+database/slow_queries.log
+
+# ─── Node.js 패키지 (대용량 — 배포 zip에 별도 포함) ─────────
+node_modules/
+
+# ─── 번들 Node.js 런타임 (대용량 — 배포 zip에 별도 포함) ────
+_node/
+
+# ─── 업로드 / 첨부 파일 ──────────────────────────────────────
+public/uploads/
+database/attachments/
+
+# ─── 임시 업데이트 폴더 ──────────────────────────────────────
+_update_tmp/
+
+# ─── 로그 ────────────────────────────────────────────────────
+logs/
+*.log
+
+# ─── OS / IDE ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+# ─── 테스트 DB ────────────────────────────────────────────────
+database/test.db

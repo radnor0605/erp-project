@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antigravity ERP | 자재관리 시스템</title>
+  <meta name="description" content="Antigravity ERP - 실시간 이동평균법 기반 자재관리 및 재고관리 시스템">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-bg"></div>
+    <div class="login-card glass-card">
+      <div class="login-logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="20" r="18" stroke="url(#grad1)" stroke-width="2"/>
+            <path d="M12 28L20 12L28 28" stroke="url(#grad1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M14.5 23H25.5" stroke="url(#grad1)" stroke-width="2" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="grad1" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#6C63FF"/>
+                <stop offset="1" stop-color="#A78BFA"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1>Antigravity ERP</h1>
+          <p>자재관리 시스템 v9.0</p>
+        </div>
+      </div>
+      <form id="login-form" class="login-form">
+        <div class="form-group">
+          <label for="login-username">아이디</label>
+          <input type="text" id="login-username" placeholder="아이디를 입력하세요" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">비밀번호</label>
+          <input type="password" id="login-password" placeholder="비밀번호를 입력하세요" autocomplete="current-password" required>
+        </div>
+        <div id="login-error" class="login-error"></div>
+        <button type="submit" class="btn btn-primary btn-full" id="login-btn">
+          <span>로그인</span>
+          <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="app hidden">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="14" stroke="url(#sg1)" stroke-width="1.5"/>
+            <path d="M10 22L16 10L22 22" stroke="url(#sg1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 18H20" stroke="url(#sg1)" stroke-width="1.5" stroke-linecap="round"/>
+            <defs><linearGradient id="sg1" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#6C63FF"/><stop offset="1" stop-color="#A78BFA"/></linearGradient></defs>
+          </svg>
+          <span class="sidebar-title">AG ERP</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebar-toggle" title="사이드바 접기">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5h14a1 1 0 110 2H3a1 1 0 110-2zm0 4h14a1 1 0 110 2H3a1 1 0 110-2zm0 4h14a1 1 0 110 2H3a1 1 0 110-2z"/></svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section open" data-section="main">
+          <button class="nav-label accordion-toggle" data-section="main">
+            <span>메인</span><svg class="accordion-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L10.586 9 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          </button>
+          <div class="accordion-body">
+            <a href="#dashboard" class="nav-item active" data-page="dashboard" onclick="Router.navigate('dashboard', {}, true)">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"/></svg>
+              <span>대시보드</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-section" data-section="master">
+          <button class="nav-label accordion-toggle" data-section="master">
+            <span>마스터 데이터</span><svg class="accordion-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L10.586 9 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          </button>
+          <div class="accordion-body">
+            <a href="#materials" class="nav-item" data-page="materials">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h3a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+              <span>품목 마스터</span>
+            </a>
+            <a href="#partners" class="nav-item" data-page="partners">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
+              <span>파트너 통합 관리</span>
+            </a>
+            <a href="#warehouses" class="nav-item" data-page="warehouses">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              <span>창고 관리</span>
+            </a>
+            <a href="#delivery-points" class="nav-item" data-page="delivery-points">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+              <span>입고지 관리</span>
+            </a>
+            <a href="#asset-management" class="nav-item" data-page="asset-management">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3h-8l-2 4h12z"/><circle cx="12" cy="14" r="3"/></svg>
+              <span>자산 관리</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-section" data-section="purchase">
+          <button class="nav-label accordion-toggle" data-section="purchase">
+            <span>구매/입고</span><svg class="accordion-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L10.586 9 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          </button>
+          <div class="accordion-body">
+            <a href="#purchasing" class="nav-item" data-page="purchasing">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              <span>발주서 관리 (PO)</span>
+            </a>
+            <a href="#receipts" class="nav-item" data-page="receipts">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V8z"/></svg>
+              <span>입고 처리</span>
+            </a>
+            <a href="#procurement" class="nav-item" data-page="procurement">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a4 4 0 00-4 4v2H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-1V6a4 4 0 00-4-4zM8 6a2 2 0 114 0v2H8V6z"/></svg>
+              <span>발주 권고 (PO)</span>
+            </a>
+            <a href="#scm-alerts" class="nav-item" data-page="scm-alerts">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+              <span id="nav-scm-alerts-label">SCM 경보</span>
+            </a>
+            <a href="#price-history" class="nav-item" data-page="price-history">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+              <span>단가 이력</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-section" data-section="sales">
+          <button class="nav-label accordion-toggle" data-section="sales">
+            <span>영업/CRM</span><svg class="accordion-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L10.586 9 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          </button>
+          <div class="accordion-body">
+            <a href="#quotations" class="nav-item" data-page="quotations">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/></svg>
+              <span>견적 관리</span>
+            </a>
+            <a href="#sales-orders" class="nav-item" data-page="sales-orders">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7z"/><path fill-rule="evenodd" d="M3 7a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm2 10a2 2 0 01-2-2V9h14v6a2 2 0 01-2 2H5zm0-4a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+              <span>주문 관리</span>
+            </a>
+            <a href="#assets" class="nav-item" data-page="assets">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8"/><path d="m21 8-9-5-9 5V3a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5z"/><circle cx="12" cy="12" r="3"/><path d="m12 15 5 2.5V20l-5-2.5L7 20v-2.5z"/></svg>
+              <span>자산 (시리얼/SW)</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-section" data-section="finance">
+          <button class="nav-label accordion-toggle" data-section="finance">
+            <span>재무/회계</span><svg class="accordion-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L10.586 9 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          </button>
+          <div class="accordion-body">
+            <a href="#ar-invoices" class="nav-item" data-page="ar-invoices">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>
+              <span>청구 및 수금 관리 (AR)</span>
+            </a>
+            <a href="#ap-invoices" class="nav-item" data-page="ap-invoices">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/></svg>
+              <span>송장 및 지급 관리 (AP)</span>
+            </a>
+            <a href="#bank-accounts" class="nav-item" data-page="bank-accounts">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1z"/></svg>
+              <span>자금 및 계좌 관리</span>
+            </a>
+            <a href="#tax-invoices" class="nav-item" data-page="tax-invoices">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/></svg>
+              <span>세금계산서</span>
+            </a>
+            <a href="#expense-vouchers" class="nav-item" data-page="expense-vouchers">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/></svg>
+              <span>수동 비용 전표</span>
+            </a>
+            <a href="#closing" class="nav-item" data-page="closing">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+              <span>매입 마감</span>
+            </a>
+            <a href="#sales-closing" class="nav-item" data-page="sales-closing">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              <span>매출 마감</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-section" data-section="reports">
+          <button class="nav-label accordion-toggle" data-section="reports">
+            <span>보고서</span><svg class="accordion-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L10.586 9 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          </button>
+          <div class="accordion-body">
+            <a href="#reports" class="nav-item" data-page="reports">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+              <span>통계 보고서</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-section" data-section="inventory">
+          <button class="nav-label accordion-toggle" data-section="inventory">
+            <span>재고 관리</span><svg class="accordion-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L10.586 9 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          </button>
+          <div class="accordion-body">
+            <a href="#inventory" class="nav-item" data-page="inventory">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/><path fill-rule="evenodd" d="M3 8h14v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+              <span>재고 현황</span>
+            </a>
+            <a href="#movements" class="nav-item" data-page="movements">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8zM12 15a1 1 0 100-2H6.414l1.293-1.293a1 1 0 10-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L6.414 15H12z"/></svg>
+              <span>재고 이동</span>
+            </a>
+            <a href="#transfer-orders" class="nav-item" data-page="transfer-orders">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8zM12 15a1 1 0 100-2H6.414l1.293-1.293a1 1 0 10-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L6.414 15H12z"/></svg>
+              <span>창고간 이전</span>
+            </a>
+            <a href="#physical-inventory" class="nav-item" data-page="physical-inventory">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <span>재고 실사</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-section" data-section="system">
+          <button class="nav-label accordion-toggle" data-section="system">
+            <span>시스템</span><svg class="accordion-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L10.586 9 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          </button>
+          <div class="accordion-body">
+            <a href="#backup" class="nav-item admin-only" data-page="backup">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/></svg>
+              <span>DB 백업</span>
+            </a>
+            <a href="#audit" class="nav-item admin-only" data-page="audit">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+              <span>감사 로그</span>
+            </a>
+            <a href="#returns" class="nav-item" data-page="returns">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <span>반품 관리</span>
+            </a>
+            <a href="#scanner" class="nav-item" data-page="scanner">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h2v2H7zm0 8h2v2H7zm8 0h2v2h-2zm0-8h2v2h-2zM7 11h10v2H7z"/></svg>
+              <span>바코드 스캔</span>
+            </a>
+            <a href="#users" class="nav-item admin-only" data-page="users">
+              <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+              <span>계정 관리</span>
+            </a>
+            <a href="#settings" class="nav-item admin-only" data-page="settings">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>시스템 설정</span>
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info" id="user-info">
+          <div class="user-avatar" id="user-avatar">A</div>
+          <div class="user-details">
+            <span class="user-name" id="user-name">관리자</span>
+            <span class="user-role" id="user-role">admin</span>
+          </div>
+        </div>
+        <button class="btn-logout" id="logout-btn" title="로그아웃">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+      <!-- Top Header (V10.0) -->
+      <header class="top-header">
+        <div class="header-left">
+          <button class="menu-toggle" id="mobile-menu-toggle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+          </button>
+          <div class="global-search-container">
+            <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+            <input type="text" id="global-search-input" class="global-search-input" placeholder="통합 검색 (메뉴, 자재, 파트너)... Ctrl+K">
+            <div id="global-search-results" class="global-search-results hidden"></div>
+          </div>
+          <span class="system-status hide-mobile">F2 조회 · F4 신규작성 · F8 저장 · F9 인쇄</span>
+        </div>
+        <div class="header-right">
+          <!-- AI 5-엔진 상태 배지 -->
+          <div class="ai-engine-badge" id="ai-engine-badge" title="AI 엔진 상태">
+            <span class="eng-dot" id="eng-gemini"   title="Gemini">G</span>
+            <span class="eng-dot" id="eng-vision"   title="Cloud Vision">V</span>
+            <span class="eng-dot" id="eng-claude"   title="Claude">C</span>
+            <span class="eng-dot" id="eng-openai"   title="GPT-4o">O</span>
+            <span class="eng-dot" id="eng-deepseek" title="DeepSeek">D</span>
+            <div class="quota-bar-wrap" style="width:52px;margin-left:6px">
+              <div class="quota-bar-fill" id="quota-bar-fill"></div>
+            </div>
+            <span class="quota-text" id="quota-text">…/1000</span>
+            <span class="quota-off-label hidden" id="quota-off-label">OFF</span>
+          </div>
+          <div class="header-user">
+            <span class="user-label" id="top-user-label">시스템 관리자</span>
+            <button class="btn-header-logout" id="header-logout-btn" title="로그아웃 (Logout)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </header>
+      <div id="page-container"></div>
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Modal Container -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div id="modal-container" class="modal-container"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/utils/persistence.js"></script>
+  <script src="/js/modules/dashboard.js"></script>
+  <script src="/js/modules/materials.js"></script>
+  <script src="/js/modules/partners.js"></script>
+  <script src="/js/modules/purchasing.js"></script>
+  <script src="/js/modules/receipts.js"></script>
+  <script src="/js/modules/movements.js"></script>
+  <script src="/js/modules/inventory.js"></script>
+  <script src="/js/modules/closing.js"></script>
+  <script src="/js/modules/physicalInventory.js"></script>
+  <script src="/js/modules/priceHistory.js"></script>
+  <script src="/js/modules/warehouses.js"></script>
+  <script src="/js/modules/deliveryPoints.js"></script>
+  <script src="/js/modules/backup.js"></script>
+  <script src="/js/modules/audit.js"></script>
+  <script src="/js/modules/procurement.js"></script>
+  <script src="/js/modules/salesOrders.js"></script>
+  <script src="/js/modules/quotations.js"></script>
+  <script src="/js/modules/salesClosing.js"></script>
+  <script src="/js/modules/assets.js"></script>
+  <script src="/js/modules/users.js"></script>
+  <script src="/js/modules/scanner.js"></script>
+  <script src="/js/modules/settings.js"></script>
+  <script src="/js/modules/reports.js"></script>
+  <script src="/js/modules/scmAlerts.js"></script>
+  <script src="/js/modules/returns.js"></script>
+  <script src="/js/modules/arInvoices.js"></script>
+  <script src="/js/modules/apInvoices.js"></script>
+  <script src="/js/modules/bankAccounts.js"></script>
+  <script src="/js/modules/transferOrders.js"></script>
+  <script src="/js/modules/taxInvoices.js"></script>
+  <script src="/js/modules/expenseVouchers.js"></script>
+  <script src="/js/modules/assetManagement.js"></script>
+  <script src="/js/app.js"></script>
+
+  <!-- Command Palette (Ctrl+K) -->
+  <div id="cmd-palette-overlay" class="cmd-palette-overlay hidden" role="dialog" aria-modal="true" aria-label="커맨드 팔레트">
+    <div class="cmd-palette-box">
+      <div class="cmd-palette-header">
+        <svg viewBox="0 0 20 20" fill="currentColor" style="width:16px;height:16px;color:var(--text-muted)"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+        <input id="cmd-palette-input" type="text" placeholder="메뉴 검색... (↑↓ 이동, Enter 이동, Esc 닫기)" autocomplete="off" spellcheck="false">
+        <kbd class="cmd-key">ESC</kbd>
+      </div>
+      <ul id="cmd-palette-list" class="cmd-palette-list"></ul>
+      <div class="cmd-palette-footer">
+        <span><kbd>↑↓</kbd> 이동</span>
+        <span><kbd>Enter</kbd> 이동</span>
+        <span><kbd>Esc</kbd> 닫기</span>
+        <span style="margin-left:auto;opacity:0.5">단축키: F2 조회 · F4 신규작성 · F8 저장 · F9 인쇄</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
