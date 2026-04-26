@@ -22,6 +22,9 @@ _node/
 public/uploads/
 database/attachments/
 
+# ─── 배포용 ZIP (GitHub 100MB 제한 초과 방지) ────────────────
+*.zip
+
 # ─── 임시 업데이트 폴더 ──────────────────────────────────────
 _update_tmp/
 
