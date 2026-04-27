@@ -84,6 +84,7 @@ try {
 const loaderPath = path.join(ROOT, 'loader.js');
 fs.writeFileSync(loaderPath, `'use strict';
 require('bytenode');
+global.__LOADED_VIA_LOADER__ = true;
 require('./server.jsc');
 `, 'utf8');
 console.log('  [OK] loader.js created');
