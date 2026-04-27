@@ -1,7 +1,7 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "buildDate": "2026-04-27",
-  "updateUrl": "https://raw.githubusercontent.com/radnor0605/erp-project/main/version.json",
+  "updateUrl": "https://raw.githubusercontent.com/radnor0605/erp-project/main/customers/all/version.json",
   "downloadUrl": "https://github.com/radnor0605/erp-project/releases/download/v1.0.1/update-v1.0.1.zip",
-  "notes": "초기 배포 버전"
+  "notes": "자산관리 모듈 추가, 배포 파이프라인 개선"
 }
