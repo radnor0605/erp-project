@@ -15,7 +15,7 @@ echo [OK] Node.js v24.14.1 (bundled)
 
 if not exist "%~dp0node_modules\" (
     echo [INSTALL] Installing dependencies...
-    call "%BUNDLE_NPM%" install --prefix "%~dp0"
+    call "%BUNDLE_NPM%" install
     if errorlevel 1 ( pause ^& exit /b 1 )
 )
 
